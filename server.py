@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify
+from game import game
 
 app = Flask(__name__)
 
@@ -8,6 +9,6 @@ app = Flask(__name__)
 @app.route('/index', methods=['GET'])
 def index():
     return render_template('index.html')
-
+    
 
 app.run(host='0.0.0.0', port='5001', debug=True)
