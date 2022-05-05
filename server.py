@@ -1,4 +1,3 @@
-from crypt import methods
 from flask import Flask, request, render_template, jsonify
 from game import game
 

@@ -12,6 +12,11 @@ function previousInput(inputs, input, arrow = false) {
     document.getElementById(`letter-${previousInput}`).focus();
 }
 
+const wordForm = document.getElementById('game');
+wordForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+});
+
 const letters = document.querySelectorAll('.letter');
 letters.forEach((letter) => {
     letter.addEventListener('keydown', (e) => {
@@ -24,15 +29,11 @@ letters.forEach((letter) => {
                 nextInput(letters, letter, true);
             } else if (e.code === 'Space') {
                 nextInput(letters, letter, true);
+            } else if (e.key === 'Enter') {
+
             } else {
                 nextInput(letters, letter);
             } 
         }, 10);
     });
-});
-
-const wordForm = document.getElementById('game');
-wordForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
 });
