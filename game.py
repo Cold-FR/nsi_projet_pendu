@@ -109,50 +109,66 @@ def complexStrategy(words: list, letters: str, letters_tried: list, letters_foun
 
 def game(isHuman, nbStrategy):
     global words
-    wordToFind = random.choice(words)
-    wordInProgress = '_' * len(wordToFind)
-    lettersTried = []
-    lettersFound = []
-    tries = 0
-
-    while wordInProgress != wordToFind:
-        if isHuman:
-            proposition = input('Proposition de lettre : ').upper()
-        else:
-            if nbStrategy == 1:
-                proposition = simpleStrategy(lettersTried, lettersFound)
-            elif nbStrategy == 2:
-                proposition = complexStrategy(words, wordInProgress, lettersTried, lettersFound)
+    parties = {
+        'count': 0,
+        'victories': 0,
+        'defeats': 0,
+        'tries': []
+    }
+    while parties['count'] != 1000 or (isHuman == True and parties['count'] != 1):
+        wordToFind = random.choice(words)
+        wordInProgress = '_' * len(wordToFind)
+        lettersTried = []
+        lettersFound = []
+        tries = 0
+        while wordInProgress != wordToFind:
+            if isHuman:
+                proposition = input('Proposition de lettre : ').upper()
             else:
-                print('Stratégie introuvable.')
-                break
-        print(f'\nTa proposition est : {proposition}')
-        if proposition in wordToFind and proposition not in lettersFound:
-            lettersFound.append(proposition)
-        elif proposition not in wordToFind:
-            if proposition not in lettersTried:
-                lettersTried.append(proposition)
-                tries += 1
-                print(pendus[tries - 1])
-                if tries < 7:
-                    print(f'Il te reste {7 - tries} essais pour deviner le mot.')
-                elif tries == 7:
-                    print(
-                        f'Tu as perdu ! Le mot à trouver était {wordToFind} !\nTu as trouvé {len(lettersFound)} lettre(s) : {wordInProgress}')
+                if nbStrategy == 1:
+                    proposition = simpleStrategy(lettersTried, lettersFound)
+                elif nbStrategy == 2:
+                    proposition = complexStrategy(words, wordInProgress, lettersTried, lettersFound)
+                else:
+                    print('Stratégie introuvable.')
                     break
-            else:
+            print(f'\nTa proposition est : {proposition}')
+            if proposition in wordToFind and proposition not in lettersFound:
+                lettersFound.append(proposition)
+            elif proposition not in wordToFind:
+                if proposition not in lettersTried:
+                    lettersTried.append(proposition)
+                    tries += 1
+                    parties['tries'] += [tries]
+                    print(pendus[tries - 1])
+                    if tries < 7:
+                        print(f'Il te reste {7 - tries} essais pour deviner le mot.')
+                    elif tries == 7:
+                        print(
+                            f'Tu as perdu ! Le mot à trouver était {wordToFind} !\nTu as trouvé {len(lettersFound)} lettre(s) : {wordInProgress}')
+                        if isHuman == False:
+                            parties['defeats'] += 1
+                            parties['count'] += 1
+                        break
+                else:
+                    print('Tu as déjà essayé cette lettre.')
+            elif proposition in lettersTried:
                 print('Tu as déjà essayé cette lettre.')
-        elif proposition in lettersTried:
-            print('Tu as déjà essayé cette lettre.')
 
-        wordInProgress = wordToFind
-        for letter in wordInProgress:
-            if letter not in lettersFound:
-                wordInProgress = wordInProgress.replace(letter, '_')
+            wordInProgress = wordToFind
+            for letter in wordInProgress:
+                if letter not in lettersFound:
+                    wordInProgress = wordInProgress.replace(letter, '_')
 
-        print(f'Voici la liste des lettres que tu as essayé : {",".join(lettersTried)}')
-        print(f'Voici les lettres que tu as trouvé : {wordInProgress}')
+            print(f'Voici la liste des lettres que tu as essayé : {",".join(lettersTried)}')
+            print(f'Voici les lettres que tu as trouvé : {wordInProgress}')
 
-        if wordInProgress == wordToFind:
-            print(f'Tu as gagné ! Le mot était {wordToFind}')
-            break
+            if wordInProgress == wordToFind:
+                print(f'Tu as gagné ! Le mot était {wordToFind}')
+                if isHuman == False:
+                    parties['victories'] += 1
+                    parties['count'] += 1
+                break
+    
+    if parties['count'] == 1000 and isHuman == False:
+        print(f'L\'IA a gagné {parties["victories"]} parties et a perdu {parties["defeats"]} parties avec une moyenne de {sum(parties["tries"])/len(parties["tries"])} essais.')
