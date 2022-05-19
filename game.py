@@ -1,5 +1,6 @@
 import string
 import random
+from xmlrpc.client import Boolean
 
 pendus = [
     """
@@ -71,6 +72,8 @@ pendus = [
 with open('mots.txt', 'r') as f:
     words = f.read().splitlines()
 
+with open('mots_bis.txt', 'r', encoding='latin-1') as f:
+    words_bis = f.read().splitlines()
 
 def simpleStrategy(letters_tried: list, letters_found: list) -> str:
     letters = [letter for letter in list(string.ascii_uppercase) if
@@ -79,7 +82,7 @@ def simpleStrategy(letters_tried: list, letters_found: list) -> str:
 
 
 def complexStrategy(words: list, letters: str, letters_tried: list, letters_found: list) -> str:
-    lenWords = [word for word in words if len(word) == len(letters)]
+    lenWords = [word.upper() for word in words if len(word) == len(letters)]
 
     lettersWords = []
     for word in lenWords:
@@ -107,16 +110,25 @@ def complexStrategy(words: list, letters: str, letters_tried: list, letters_foun
     return list(lettersProbabilities.keys())[0]
 
 
-def game(isHuman, nbStrategy):
+def game(isHuman: bool, nbStrategy: int, nbList: int):
     global words
+    global words_bis
     parties = {
         'count': 0,
         'victories': 0,
         'defeats': 0,
         'tries': []
     }
-    while parties['count'] != 1000 or (isHuman == True and parties['count'] != 1):
-        wordToFind = random.choice(words)
+    while parties['count'] != 5000 or (isHuman == True and parties['count'] != 1):
+        wordsList = []
+        if nbList == 1: 
+            wordsList = words
+        elif nbList == 2:
+            wordsList = words_bis
+        else:
+            print('Liste introuvable')
+            break
+        wordToFind = random.choice(wordsList).upper()
         wordInProgress = '_' * len(wordToFind)
         lettersTried = []
         lettersFound = []
@@ -128,7 +140,7 @@ def game(isHuman, nbStrategy):
                 if nbStrategy == 1:
                     proposition = simpleStrategy(lettersTried, lettersFound)
                 elif nbStrategy == 2:
-                    proposition = complexStrategy(words, wordInProgress, lettersTried, lettersFound)
+                    proposition = complexStrategy(wordsList, wordInProgress, lettersTried, lettersFound)
                 else:
                     print('Stratégie introuvable.')
                     break
