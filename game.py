@@ -1,6 +1,5 @@
 import string
 import random
-from xmlrpc.client import Boolean
 
 pendus = [
     """
